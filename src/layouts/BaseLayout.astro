@@ -1,0 +1,99 @@
+---
+/**
+ * BaseLayout.astro
+ * Root HTML shell for every page.
+ *
+ * Responsibilities:
+ * - <html> with dark-class support (theme flash prevention)
+ * - Font loading via @fontsource
+ * - Global CSS import
+ * - Header component
+ * - Lenis smooth scroll init (deferred)
+ * - <slot /> for page content
+ */
+
+import "@fontsource-variable/space-grotesk";
+import "@fontsource-variable/dm-sans";
+import "@/styles/global.css";
+
+import Header from "@/components/Header.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Adnan Bin Hossen — Full-Stack Developer",
+  description = "Full-stack products that scale cleanly — from interface to API.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Favicon placeholder -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Theme flash prevention — runs before paint -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        const theme = stored || (prefersDark ? "dark" : "light");
+        if (theme === "dark") document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("no-js");
+      })();
+    </script>
+  </head>
+
+  <body>
+    <Header />
+
+    <slot />
+
+    <!-- Lenis smooth scroll init (deferred) -->
+    <script>
+      async function initLenis() {
+        const { default: Lenis } = await import("lenis");
+
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          touchMultiplier: 2,
+          infinite: false,
+        });
+
+        // Expose for GSAP integration later
+        (window as any).__lenis = lenis;
+
+        function raf(time: number) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+      }
+
+      // Respect reduced-motion
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        initLenis();
+      }
+
+      // Re-init on Astro view transitions
+      document.addEventListener("astro:after-swap", () => {
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          initLenis();
+        }
+      });
+    </script>
+  </body>
+</html>

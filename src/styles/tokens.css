@@ -1,0 +1,82 @@
+/* =========================================================
+   Design Tokens — tokens.css
+   Theme-switching CSS custom properties.
+   Prefix: --t- to avoid clashing with Tailwind internals.
+   ========================================================= */
+
+:root {
+  /* ---- Semantic colors (swap in .dark) ---- */
+  --t-bg: #ffffff;
+  --t-surface: #f8fafb;
+  --t-surface-elevated: #ffffff;
+  --t-text: #0f172a;
+  --t-muted: #64748b;
+  --t-border: #e2e8f0;
+
+  /* ---- Accent (constant across themes) ---- */
+  --t-accent: #0e9f6e;
+  --t-accent-soft: #34d399;
+  --t-accent-glow: #059669;
+  --t-accent-50: #ecfdf5;
+  --t-accent-100: #d1fae5;
+  --t-accent-900: #064e3b;
+
+  /* ---- Shadows ---- */
+  --t-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --t-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --t-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --t-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+  --t-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+
+  /* ---- Glass / frosted ---- */
+  --t-glass-bg: rgba(255, 255, 255, 0.72);
+  --t-glass-bg-strong: rgba(255, 255, 255, 0.88);
+  --t-glass-border: rgba(255, 255, 255, 0.25);
+  --t-glass-blur: 20px;
+
+  /* ---- Motion ---- */
+  --t-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --t-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-duration-fast: 150ms;
+  --t-duration-normal: 300ms;
+  --t-duration-slow: 600ms;
+  --t-duration-cinematic: 1200ms;
+
+  /* ---- Radii ---- */
+  --t-radius-sm: 0.5rem;
+  --t-radius-md: 1rem;
+  --t-radius-lg: 1.5rem;
+  --t-radius-xl: 2rem;
+  --t-radius-2xl: 2.5rem;
+  --t-radius-3xl: 3rem;
+  --t-radius-pill: 9999px;
+
+  /* ---- Layout ---- */
+  --t-container-max: 1400px;
+  --t-container-padding: clamp(1rem, 4vw, 2.5rem);
+  --t-section-gap: clamp(4rem, 10vw, 8rem);
+
+  /* ---- Header ---- */
+  --t-header-height: 5rem;
+}
+
+/* ---- Dark theme overrides ---- */
+.dark {
+  --t-bg: #050a14;
+  --t-surface: #0f1629;
+  --t-surface-elevated: #162033;
+  --t-text: #f1f5f9;
+  --t-muted: #94a3b8;
+  --t-border: #1e293b;
+
+  --t-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --t-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --t-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --t-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);
+  --t-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.5);
+
+  --t-glass-bg: rgba(15, 22, 41, 0.72);
+  --t-glass-bg-strong: rgba(15, 22, 41, 0.88);
+  --t-glass-border: rgba(255, 255, 255, 0.08);
+}

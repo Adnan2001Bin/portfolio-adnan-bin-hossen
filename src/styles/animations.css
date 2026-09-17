@@ -1,0 +1,120 @@
+/* =========================================================
+   Animations — animations.css
+   Keyframes & utility classes for non-Tailwind motion.
+   Uses tokens from tokens.css for timing values.
+   ========================================================= */
+
+/* ---- Entrance animations ---- */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---- Continuous / decorative ---- */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-0.75rem); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--t-accent-soft, #34d399); }
+  50%      { box-shadow: 0 0 20px 4px var(--t-accent-soft, #34d399); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ---- Utility classes ---- */
+
+.animate-fade-in {
+  animation: fade-in var(--t-duration-slow) var(--t-ease-out) both;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up var(--t-duration-slow) var(--t-ease-out) both;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down var(--t-duration-normal) var(--t-ease-out) both;
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale var(--t-duration-slow) var(--t-ease-out) both;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* ---- Stagger delay utilities ---- */
+
+.delay-1 { animation-delay: 100ms; }
+.delay-2 { animation-delay: 200ms; }
+.delay-3 { animation-delay: 300ms; }
+.delay-4 { animation-delay: 400ms; }
+.delay-5 { animation-delay: 500ms; }
+.delay-6 { animation-delay: 600ms; }
+
+/* ---- Reduced motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-float,
+  .animate-pulse-glow,
+  .animate-spin-slow {
+    animation: none !important;
+  }
+}

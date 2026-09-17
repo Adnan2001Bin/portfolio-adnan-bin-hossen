@@ -1,0 +1,127 @@
+/* =========================================================
+   Global Styles — global.css
+   Entry point: Tailwind 4, theme config, imports, base resets.
+   ========================================================= */
+
+/* ---- Tailwind 4 core ---- */
+@import "tailwindcss";
+
+/* ---- Custom token & animation layers ---- */
+@import "./tokens.css";
+@import "./animations.css";
+
+/* ---- Class-based dark mode ---- */
+@variant dark (&:where(.dark, .dark *));
+
+/* ---- Tailwind 4 theme extensions ---- */
+@theme {
+  /* Typography */
+  --font-display: "Space Grotesk Variable", "Space Grotesk", system-ui, sans-serif;
+  --font-body: "DM Sans Variable", "DM Sans", system-ui, sans-serif;
+
+  /* Accent palette — emerald */
+  --color-accent: #0e9f6e;
+  --color-accent-soft: #34d399;
+  --color-accent-glow: #059669;
+  --color-accent-50: #ecfdf5;
+  --color-accent-100: #d1fae5;
+  --color-accent-200: #a7f3d0;
+  --color-accent-800: #065f46;
+  --color-accent-900: #064e3b;
+  --color-accent-950: #022c22;
+
+  /* Extra radii for Numa-like stadium shapes */
+  --radius-4xl: 2.5rem;
+  --radius-5xl: 3rem;
+}
+
+/* ---- Base layer ---- */
+@layer base {
+  html {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--t-bg);
+    color: var(--t-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    transition: background-color var(--t-duration-normal) var(--t-ease-out),
+                color var(--t-duration-normal) var(--t-ease-out);
+  }
+
+  /* Headings get display font */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  /* Smooth anchor scrolling offset for fixed header */
+  :target {
+    scroll-margin-top: var(--t-header-height);
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--t-accent);
+    color: white;
+  }
+
+  /* Focus visible */
+  :focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+    border-radius: var(--t-radius-sm);
+  }
+
+  /* Links */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Images */
+  img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+/* ---- Component layer ---- */
+@layer components {
+  /* Glass pill */
+  .glass-pill {
+    background: var(--t-glass-bg);
+    border: 1px solid var(--t-glass-border);
+    backdrop-filter: blur(var(--t-glass-blur));
+    -webkit-backdrop-filter: blur(var(--t-glass-blur));
+  }
+
+  /* Stadium mask for images */
+  .stadium-mask {
+    border-radius: var(--t-radius-pill);
+    overflow: hidden;
+  }
+
+  /* Section container */
+  .section-container {
+    max-width: var(--t-container-max);
+    margin-inline: auto;
+    padding-inline: var(--t-container-padding);
+  }
+
+  /* Accent text */
+  .text-accent-gradient {
+    background: linear-gradient(135deg, var(--t-accent), var(--t-accent-soft));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

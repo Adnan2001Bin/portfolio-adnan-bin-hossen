@@ -1,0 +1,105 @@
+---
+/**
+ * index.astro — Homepage
+ *
+ * Single long-scroll page with all portfolio sections.
+ * Sections are built one phase at a time; placeholders mark upcoming phases.
+ */
+
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { siteConfig } from "@/data/navigation";
+---
+
+<BaseLayout>
+  <main id="main-content">
+    <!-- ========================================
+         Sections below are built per phase.
+         Phase 1 (Scaffold): header shell + scaffold page.
+         ======================================== -->
+
+    <!-- Phase 2: Hero + morph -->
+    <!-- Phase 3: Mosaic + centerpiece -->
+    <!-- Phase 4: Stats + sticky features -->
+    <!-- Phase 5: Process systems -->
+    <!-- Phase 6: Case study device -->
+    <!-- Phase 7: Steps + testimonials -->
+    <!-- Phase 8: Final CTA + 3D + footer -->
+
+    <!-- Temporary scaffold verification content -->
+    <section
+      class="min-h-screen flex items-center justify-center"
+      style="padding-top: var(--t-header-height)"
+    >
+      <div class="text-center px-4">
+        <p
+          class="text-sm font-medium tracking-widest uppercase mb-4"
+          style="color: var(--t-muted)"
+        >
+          Portfolio Scaffold — Phase 1
+        </p>
+        <h1
+          class="font-display text-5xl sm:text-6xl md:text-8xl font-bold mb-6 text-accent"
+        >
+          {siteConfig.shortName}
+        </h1>
+        <p
+          class="text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto mb-2 font-body"
+          style="color: var(--t-text)"
+        >
+          {siteConfig.positioning}
+        </p>
+        <p class="text-base" style="color: var(--t-muted)">
+          {siteConfig.role} · {siteConfig.location}
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-4 mt-10">
+          <a
+            href={siteConfig.primaryCTA.href}
+            class="inline-flex items-center gap-2 rounded-full bg-accent px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-accent-glow hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+          >
+            {siteConfig.primaryCTA.label}
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M1 8h14M9 2l6 6-6 6" />
+            </svg>
+          </a>
+          <a
+            href={siteConfig.secondaryCTA.href}
+            class="inline-flex items-center gap-2 rounded-full border px-8 py-3.5 text-base font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
+            style={`
+              border-color: var(--t-border);
+              color: var(--t-text);
+            `}
+          >
+            {siteConfig.secondaryCTA.label}
+          </a>
+        </div>
+
+        <!-- Theme & glass test -->
+        <div class="mt-16 max-w-md mx-auto">
+          <div
+            class="glass-pill rounded-2xl p-6 text-left"
+            style="box-shadow: var(--t-shadow-lg)"
+          >
+            <p class="text-sm font-medium mb-1" style="color: var(--t-accent)">
+              ✓ Scaffold working
+            </p>
+            <p class="text-sm" style="color: var(--t-muted)">
+              Tailwind 4 · Space Grotesk · DM Sans · Glass pills · Dark mode ·
+              Lenis smooth scroll · Design tokens
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,152 @@
+---
+/**
+ * Header.astro
+ * Floating frosted-glass header matching Numa's 3-element pattern:
+ *   [Menu pill] ··· Brand ··· [Hire Me pill]
+ *
+ * - Fixed top, full-width
+ * - Backdrop-blur glass effect
+ * - Transparent over hero, gains bg on scroll (scroll behavior wired in Phase 2)
+ */
+
+import { siteConfig } from "@/data/navigation";
+---
+
+<header
+  id="site-header"
+  class="fixed top-0 inset-x-0 z-50 transition-[background-color,border-color,box-shadow] duration-300"
+>
+  <nav
+    class="flex items-center justify-between mx-auto px-4 py-3 sm:px-6 md:px-8"
+    style={`max-width: var(--t-container-max)`}
+    aria-label="Primary navigation"
+  >
+    <!-- Menu pill -->
+    <button
+      type="button"
+      class="glass-pill flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      id="menu-toggle"
+    >
+      <span class="hidden sm:inline">Menu</span>
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        aria-hidden="true"
+        class="opacity-70"
+      >
+        <circle cx="4.5" cy="4.5" r="1.5" />
+        <circle cx="11.5" cy="4.5" r="1.5" />
+        <circle cx="4.5" cy="11.5" r="1.5" />
+        <circle cx="11.5" cy="11.5" r="1.5" />
+      </svg>
+    </button>
+
+    <!-- Brand -->
+    <a
+      href="/"
+      class="font-display text-xl font-bold tracking-tight transition-opacity hover:opacity-80"
+      aria-label={`${siteConfig.shortName} — Home`}
+    >
+      {siteConfig.shortName}
+    </a>
+
+    <!-- Right group: theme toggle + CTA pill -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Theme toggle -->
+      <button
+        type="button"
+        id="theme-toggle"
+        class="glass-pill flex items-center justify-center rounded-full p-2.5 transition-all duration-200 hover:scale-[1.05] active:scale-[0.95]"
+        aria-label="Toggle dark mode"
+      >
+        <!-- Sun icon (shown in dark mode) -->
+        <svg
+          class="hidden dark:block h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg
+          class="block dark:hidden h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
+
+      <!-- CTA pill -->
+      <a
+        href={siteConfig.primaryCTA.href}
+        class="flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-accent-glow hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
+      >
+        {siteConfig.primaryCTA.label}
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M1 7h12M8 2l5 5-5 5" />
+        </svg>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- Theme toggle script -->
+<script>
+  function initThemeToggle() {
+    const btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+
+    btn.addEventListener("click", () => {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+  }
+
+  // Run on initial load and on Astro view transitions
+  initThemeToggle();
+  document.addEventListener("astro:after-swap", initThemeToggle);
+</script>
+
+<style>
+  /* Header gains a background after scrolling past hero */
+  header.scrolled {
+    background: var(--t-glass-bg-strong);
+    border-bottom: 1px solid var(--t-glass-border);
+    backdrop-filter: blur(var(--t-glass-blur));
+    -webkit-backdrop-filter: blur(var(--t-glass-blur));
+    box-shadow: var(--t-shadow-sm);
+  }
+</style>
