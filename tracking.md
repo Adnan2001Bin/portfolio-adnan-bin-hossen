@@ -22,10 +22,10 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 
 | Field | Value |
 |-------|-------|
-| **Current phase** | 1 — Scaffold |
-| **Status** | ✅ Completed — awaiting user approval to start Phase 2 |
-| **Last updated** | 2026-09-17 |
-| **Waiting on** | User approval to begin Phase 2 (Hero + morph) |
+| **Current phase** | 2 — Hero + morph |
+| **Status** | ✅ Completed — awaiting user approval to start Phase 3 |
+| **Last updated** | 2026-09-18 |
+| **Waiting on** | User approval to begin Phase 3 (Mosaic + centerpiece) |
 
 ---
 
@@ -34,8 +34,8 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 | Phase | Name | Status | Approved by user? | Notes |
 |------:|------|--------|-------------------|-------|
 | 0 | Spec lock | ✅ Approved | Yes | Identity filled, scope confirmed |
-| 1 | Scaffold | ✅ Completed | Yes | Astro 5 + TS + Tailwind 4 + tokens + BaseLayout + header shell |
-| 2 | Hero + morph | Not started | No | Header + hero + stadium morph |
+| 1 | Scaffold | ✅ Approved | Yes | Astro 5 + TS + Tailwind 4 + tokens + BaseLayout + header shell |
+| 2 | Hero + morph | ✅ Completed | Pending | Header states + hero section + stadium morph animation |
 | 3 | Mosaic + centerpiece | Not started | No | Floating mosaic + featured ovals |
 | 4 | Stats + sticky features | Not started | No | Stats cards + sticky split panel |
 | 5 | Process systems | Not started | No | Timeline / wave / giant keywords |
@@ -71,44 +71,44 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 
 ## Active phase checklist
 
-### Phase 1 — Scaffold
+### Phase 2 — Hero + morph
 
-- [x] Astro 5 project initialized with TypeScript (strict)
-- [x] Tailwind CSS 4 configured via `@tailwindcss/vite` plugin
-- [x] Design tokens in `src/styles/tokens.css` (light/dark theme variables)
-- [x] Animation keyframes in `src/styles/animations.css` (with reduced-motion)
-- [x] Global styles in `src/styles/global.css` (Tailwind 4 @theme, fonts, base resets)
-- [x] `src/layouts/BaseLayout.astro` (fonts, global CSS, theme flash prevention, Lenis init)
-- [x] `src/components/Header.astro` (floating glass header: Menu · Brand · Toggle · CTA)
-- [x] `src/data/navigation.ts` (typed nav items, socials, site config)
-- [x] `src/pages/index.astro` (scaffold page with section placeholders)
-- [x] Fonts: Space Grotesk (display) + DM Sans (body) via @fontsource-variable
-- [x] Dark/light mode: class strategy, CSS vars, localStorage + system pref
-- [x] Lenis smooth scroll: deferred init, reduced-motion aware
-- [x] GSAP + ScrollTrigger: installed, ready for Phase 2+
-- [x] SVG favicon with emerald "A" monogram
-- [x] Build passes, dev server starts cleanly (Astro 5.18.2)
-- [x] `tracking.md` updated; waiting for permission to start Phase 2
+- [x] Inspected Numa live site HTML structure for hero (cover__mask, cover__camera, video bg)
+- [x] Reviewed reference images: pw_scroll_0 (hero), brave_FUd0g3ZDIw (mid-morph), brave_KA9zEFDG83 (post-morph)
+- [x] Created `src/scripts/smooth-scroll.ts` — Lenis + GSAP ScrollTrigger sync
+- [x] Updated `src/layouts/BaseLayout.astro` — uses shared smooth-scroll module
+- [x] Created `src/components/sections/Hero.astro` — full hero section:
+  - Dark atmospheric gradient background (placeholder for portrait)
+  - Subtle grid + vignette overlays for cinematic depth
+  - Large headline with accent-colored second line
+  - Subcopy, dual CTA buttons, identity bar
+  - Entrance animation: title line reveals + staggered fades
+  - GSAP ScrollTrigger pin+scrub morph: frame gains border-radius + margins → stadium shape
+  - Responsive morph values (mobile vs desktop insets)
+  - `prefers-reduced-motion` skip for all animations
+  - Theme background reveals around morphed frame
+- [x] Updated `src/components/Header.astro` — three visual states:
+  - `.header-transparent`: white text, subtle glass pills (over dark hero)
+  - `.scrolled`: frosted glass bar, themed text (post-morph)
+  - Default: themed text, no special background (non-hero pages)
+  - Hero CTA = white pill (matching Numa), transitions to accent green after scroll
+  - Fallback scroll listener for pages without hero
+- [x] Updated `src/pages/index.astro` — imports Hero, section placeholders for phases 3–8
+- [x] Build passes cleanly (4.3s, 0 errors)
+- [x] `tracking.md` updated; waiting for permission to start Phase 3
 
 ---
 
-## Files touched (this phase)
+## Files touched (Phase 2)
 
 | File | Action |
 |------|--------|
-| `package.json` | Created — deps: astro, tailwindcss 4, gsap, lenis, fontsource |
-| `astro.config.mjs` | Created — Tailwind Vite plugin |
-| `tsconfig.json` | Created — strict, path aliases |
-| `src/env.d.ts` | Created — Astro type reference |
-| `src/styles/tokens.css` | Created — design tokens (colors, shadows, glass, motion, radii) |
-| `src/styles/animations.css` | Created — keyframes + reduced-motion |
-| `src/styles/global.css` | Created — Tailwind 4 entry, @theme, base layer |
-| `src/data/navigation.ts` | Created — nav items, socials, siteConfig |
-| `src/components/Header.astro` | Created — floating glass header shell |
-| `src/layouts/BaseLayout.astro` | Created — root layout, fonts, Lenis |
-| `src/pages/index.astro` | Created — scaffold homepage |
-| `public/favicon.svg` | Created — emerald monogram |
-| `tracking.md` | Updated — Phase 0 approved, Phase 1 tracked |
+| `src/scripts/smooth-scroll.ts` | Created — Lenis + GSAP ticker sync, reduced-motion aware |
+| `src/components/sections/Hero.astro` | Created — hero section with morph animation |
+| `src/components/Header.astro` | Rewritten — three visual states (transparent/scrolled/default) |
+| `src/layouts/BaseLayout.astro` | Updated — uses shared smooth-scroll module |
+| `src/pages/index.astro` | Updated — imports Hero component |
+| `tracking.md` | Updated — Phase 1 approved, Phase 2 tracked |
 
 ---
 
@@ -119,13 +119,17 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 | D1 | Accent = emerald green `#0E9F6E` (not Numa blue) | User preference; premium emerald replaces electric blue for headlines, active states, gradients, CTA glow |
 | D2 | Placeholders for all project screenshots, portrait, and media | No real assets yet; clearly labeled placeholder images; real assets swapped before Phase 9 polish |
 | D3 | Copy Numa 3D/animation assets via Playwriter for motion shells | Per BUILD_PROMPT.md §Asset copy; replace lifestyle/branding with portfolio content but keep 3D/device/motion visuals |
-| D4 | Font: geometric modern sans (not Inter/Roboto) | Will select during Phase 1 scaffold; candidates: Figtree, Space Grotesk, Outfit, Satoshi, Plus Jakarta Sans |
+| D4 | Font: Space Grotesk (display) + DM Sans (body) | Distinctive geometric sans, not Inter/Roboto |
 | D5 | Secondary CTA = Download CV / Email | Standard portfolio pattern |
-| D6 | Brand mark = "Adnan" text or AB monogram | Final mark decided during Phase 1/2 |
+| D6 | Brand mark = "Adnan" text | Keeping text mark; can upgrade to monogram later |
+| D7 | Hero gradient placeholder (dark navy + emerald glows) instead of real portrait | No portrait assets yet; clearly marked with badge |
+| D8 | Hero CTA over dark bg = white pill (not accent green) | Matches Numa's white pill CTA over hero; transitions to accent after scroll |
+| D9 | Lenis + GSAP sync via shared module `smooth-scroll.ts` | Single init, prevents double rAF loops, properly connects Lenis scroll to ScrollTrigger |
+| D10 | Morph uses margin animation (not inset) on hero-frame | More reliable with GSAP; margin on a relatively-positioned block-level element |
 
 ---
 
-## Open questions (all resolved for Phase 0)
+## Open questions (all resolved)
 
 | # | Question | Answer |
 |---|----------|--------|
@@ -138,14 +142,6 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 
 ---
 
-## Files touched (this phase)
-
-| File | Action |
-|------|--------|
-| `tracking.md` | Updated with content identity, decisions, resolved questions |
-
----
-
 ## Assets copied from numa.uprock.pro
 
 > Fill during Playwriter passes. Prefer `src/assets/reference-from-numa/` or `public/reference-from-numa/`.
@@ -153,6 +149,8 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 | Date | Phase | Source URL | Local path | Type (img / video / lottie / 3D / sequence) | Used in section |
 |------|------:|------------|------------|---------------------------------------------|-----------------|
 | — | — | — | — | — | — |
+
+> Note: Phase 2 hero uses a CSS gradient placeholder, not Numa assets. Numa's hero uses a video (`/f/8481e588bacd48325f27d47baf528b0a_1920.mp4`). Asset copying will begin in Phase 3+ for mosaic images and later for 3D device model.
 
 ---
 
@@ -164,6 +162,8 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 | 2026-09-17 | — | Added Playwriter scroll/animation QA + 3D/animation asset-copy requirements |
 | 2026-09-17 | 0 | Completed Phase 0: filled content identity (Adnan Bin Hossen, Full-Stack Developer, emerald accent), confirmed placeholders for assets, resolved all open questions, scope matches BUILD_PROMPT.md |
 | 2026-09-17 | 1 | Completed Phase 1 Scaffold: Astro 5 + TS + Tailwind 4, design tokens, animations.css, global styles, BaseLayout with Lenis + theme flash prevention, floating glass Header, typed data files, Space Grotesk + DM Sans fonts, dark/light mode, favicon. Build + dev server verified. |
+| 2026-09-17 | 2 | Started Phase 2: inspected Numa live site HTML, reviewed reference images for hero morph behavior. Created Hero.astro with gradient bg + entrance animation + GSAP pin/scrub morph. Created smooth-scroll.ts for Lenis+GSAP sync. Rewrote Header with 3 visual states. |
+| 2026-09-18 | 2 | Completed Phase 2: fixed hero-section bg for morph reveal, verified build (clean, 4.3s). All deliverables done. |
 
 ---
 

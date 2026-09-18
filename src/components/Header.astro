@@ -1,12 +1,13 @@
 ---
 /**
  * Header.astro
- * Floating frosted-glass header matching Numa's 3-element pattern:
- *   [Menu pill] ··· Brand ··· [Hire Me pill]
+ * Floating header matching Numa's 3-element pattern:
+ *   [Menu pill] ··· Brand ··· [Theme toggle] [Hire Me pill]
  *
- * - Fixed top, full-width
- * - Backdrop-blur glass effect
- * - Transparent over hero, gains bg on scroll (scroll behavior wired in Phase 2)
+ * States (controlled by classes):
+ *   .header-transparent — over the dark hero: white text, subtle glass pills
+ *   .scrolled           — after hero morph: frosted glass bar, themed text
+ *   (default)           — no hero present: themed text, no special bg
  */
 
 import { siteConfig } from "@/data/navigation";
@@ -14,7 +15,7 @@ import { siteConfig } from "@/data/navigation";
 
 <header
   id="site-header"
-  class="fixed top-0 inset-x-0 z-50 transition-[background-color,border-color,box-shadow] duration-300"
+  class="fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-out"
 >
   <nav
     class="flex items-center justify-between mx-auto px-4 py-3 sm:px-6 md:px-8"
@@ -24,7 +25,7 @@ import { siteConfig } from "@/data/navigation";
     <!-- Menu pill -->
     <button
       type="button"
-      class="glass-pill flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+      class="header-pill flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
       aria-label="Open navigation menu"
       aria-expanded="false"
       id="menu-toggle"
@@ -48,7 +49,7 @@ import { siteConfig } from "@/data/navigation";
     <!-- Brand -->
     <a
       href="/"
-      class="font-display text-xl font-bold tracking-tight transition-opacity hover:opacity-80"
+      class="header-brand font-display text-xl font-bold tracking-tight transition-colors duration-300"
       aria-label={`${siteConfig.shortName} — Home`}
     >
       {siteConfig.shortName}
@@ -60,7 +61,7 @@ import { siteConfig } from "@/data/navigation";
       <button
         type="button"
         id="theme-toggle"
-        class="glass-pill flex items-center justify-center rounded-full p-2.5 transition-all duration-200 hover:scale-[1.05] active:scale-[0.95]"
+        class="header-pill flex items-center justify-center rounded-full p-2.5 transition-all duration-200 hover:scale-[1.05] active:scale-[0.95]"
         aria-label="Toggle dark mode"
       >
         <!-- Sun icon (shown in dark mode) -->
@@ -102,7 +103,7 @@ import { siteConfig } from "@/data/navigation";
       <!-- CTA pill -->
       <a
         href={siteConfig.primaryCTA.href}
-        class="flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-accent-glow hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
+        class="header-cta flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
       >
         {siteConfig.primaryCTA.label}
         <svg
@@ -135,18 +136,103 @@ import { siteConfig } from "@/data/navigation";
     });
   }
 
-  // Run on initial load and on Astro view transitions
+  // Fallback scroll listener for pages without hero
+  function initHeaderFallbackScroll() {
+    const header = document.getElementById("site-header");
+    const heroSection = document.getElementById("hero-section");
+    if (!header || heroSection) return; // Hero handles its own header state
+
+    const onScroll = () => {
+      header.classList.toggle("scrolled", window.scrollY > 80);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+
   initThemeToggle();
-  document.addEventListener("astro:after-swap", initThemeToggle);
+  initHeaderFallbackScroll();
+  document.addEventListener("astro:after-swap", () => {
+    initThemeToggle();
+    initHeaderFallbackScroll();
+  });
 </script>
 
 <style>
-  /* Header gains a background after scrolling past hero */
+  /*
+   * Header states
+   * .header-transparent  → over dark hero (white text, subtle glass)
+   * .scrolled            → post-hero (frosted bar, themed text)
+   * (default)            → standard page (themed text, no special bg)
+   */
+
+  /* ── Default state (no hero) ── */
+  .header-pill {
+    background: var(--t-glass-bg);
+    border: 1px solid var(--t-glass-border);
+    backdrop-filter: blur(var(--t-glass-blur));
+    -webkit-backdrop-filter: blur(var(--t-glass-blur));
+    color: var(--t-text);
+  }
+
+  .header-brand {
+    color: var(--t-text);
+  }
+
+  .header-cta {
+    background: var(--t-accent);
+    color: white;
+  }
+  .header-cta:hover {
+    background: var(--t-accent-glow);
+  }
+
+  /* ── Transparent state (over dark hero) ── */
+  header.header-transparent {
+    /* No bar background */
+  }
+
+  header.header-transparent .header-pill {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  header.header-transparent .header-brand {
+    color: white;
+  }
+
+  header.header-transparent .header-cta {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f172a;
+  }
+  header.header-transparent .header-cta:hover {
+    background: white;
+  }
+
+  /* ── Scrolled state (frosted glass bar) ── */
   header.scrolled {
     background: var(--t-glass-bg-strong);
     border-bottom: 1px solid var(--t-glass-border);
     backdrop-filter: blur(var(--t-glass-blur));
     -webkit-backdrop-filter: blur(var(--t-glass-blur));
     box-shadow: var(--t-shadow-sm);
+  }
+
+  header.scrolled .header-pill {
+    background: var(--t-glass-bg);
+    border-color: var(--t-glass-border);
+    color: var(--t-text);
+  }
+
+  header.scrolled .header-brand {
+    color: var(--t-text);
+  }
+
+  header.scrolled .header-cta {
+    background: var(--t-accent);
+    color: white;
+  }
+  header.scrolled .header-cta:hover {
+    background: var(--t-accent-glow);
   }
 </style>

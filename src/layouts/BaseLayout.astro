@@ -8,7 +8,7 @@
  * - Font loading via @fontsource
  * - Global CSS import
  * - Header component
- * - Lenis smooth scroll init (deferred)
+ * - Smooth scroll + GSAP init (via shared module)
  * - <slot /> for page content
  */
 
@@ -39,17 +39,17 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
 
-    <!-- Favicon placeholder -->
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- Theme flash prevention — runs before paint -->
     <script is:inline>
       (function () {
-        const stored = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia(
+        var stored = localStorage.getItem("theme");
+        var prefersDark = window.matchMedia(
           "(prefers-color-scheme: dark)"
         ).matches;
-        const theme = stored || (prefersDark ? "dark" : "light");
+        var theme = stored || (prefersDark ? "dark" : "light");
         if (theme === "dark") document.documentElement.classList.add("dark");
         document.documentElement.classList.remove("no-js");
       })();
@@ -61,39 +61,9 @@ const {
 
     <slot />
 
-    <!-- Lenis smooth scroll init (deferred) -->
+    <!-- Smooth scroll + GSAP init (deferred module) -->
     <script>
-      async function initLenis() {
-        const { default: Lenis } = await import("lenis");
-
-        const lenis = new Lenis({
-          duration: 1.2,
-          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-          touchMultiplier: 2,
-          infinite: false,
-        });
-
-        // Expose for GSAP integration later
-        (window as any).__lenis = lenis;
-
-        function raf(time: number) {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-      }
-
-      // Respect reduced-motion
-      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        initLenis();
-      }
-
-      // Re-init on Astro view transitions
-      document.addEventListener("astro:after-swap", () => {
-        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          initLenis();
-        }
-      });
+      import "../scripts/smooth-scroll";
     </script>
   </body>
 </html>
