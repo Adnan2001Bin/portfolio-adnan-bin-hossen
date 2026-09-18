@@ -1,0 +1,441 @@
+---
+/**
+ * Mosaic.astro — Phase 3: Floating mosaic + featured centerpiece
+ *
+ * Numa reference pattern (verified via Playwriter on numa.uprock.pro):
+ * - Large wide STADIUM frame as a centerpiece, with smaller OVAL frames
+ *   floating around it (parallax drift).
+ * - A 4-column MOSAIC of scattered stadium/oval frames below it, each column
+ *   drifting at a different speed on scroll (parallax) for a floating feel.
+ * - Frames = pill border-radius (9999px) + overflow hidden over imagery.
+ *
+ * Portfolio adaptation (BUILD_PROMPT §3–4):
+ * - Numa lifestyle photos → project thumbnails / UI crops (placeholders here, D2).
+ * - Center = featured project; surrounding ovals = related work.
+ *
+ * Motion: GSAP ScrollTrigger scrub for column parallax + centerpiece ovals.
+ * Reduced motion: no parallax; static staggered grid.
+ */
+
+import {
+  featuredProject,
+  featuredOvals,
+  mosaicItems,
+  type MosaicItem,
+} from "@/data/projects";
+
+// Split mosaic items into 4 columns for a staggered grid.
+const columns: MosaicItem[][] = [[], [], [], []];
+mosaicItems.forEach((item, i) => {
+  columns[i % 4].push(item);
+});
+
+// Per-column parallax speed (px offset applied across the scroll range).
+// Alternating directions create the floating/scattered feel.
+const columnParallax = [90, -70, 70, -90];
+// Vertical start offset per column (staggered rows, like the Numa grid).
+const columnOffset = ["3.5rem", "0rem", "5rem", "1.5rem"];
+---
+
+<section
+  id="work"
+  class="relative w-full overflow-hidden py-20 sm:py-28 md:py-32"
+  style="background: var(--t-bg)"
+  aria-label="Selected work"
+>
+  <!-- ── Section intro ── -->
+  <div class="section-container mb-14 sm:mb-20 md:mb-24">
+    <div class="max-w-3xl mosaic-intro">
+      <span
+        class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium tracking-widest uppercase"
+        style="color: var(--t-accent)"
+      >
+        <span class="inline-block w-6 h-px" style="background: var(--t-accent)"
+        ></span>
+        Selected work
+      </span>
+      <h2
+        class="mt-5 font-display font-bold leading-[1.05] tracking-tight text-[clamp(2rem,5vw,4.25rem)]"
+        style="color: var(--t-text)"
+      >
+        A mosaic of things
+        <span class="text-accent-gradient">I've shipped</span>
+      </h2>
+      <p
+        class="mt-5 text-[clamp(0.95rem,1.5vw,1.2rem)] leading-relaxed max-w-xl"
+        style="color: var(--t-muted)"
+      >
+        Products, systems, and interfaces — built end to end. A scroll through
+        the work, from data layer to the last pixel.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Featured centerpiece + surrounding ovals ── -->
+  <div class="section-container">
+    <div class="relative mx-auto max-w-5xl mosaic-centerpiece">
+      <!-- Centerpiece: wide stadium frame -->
+      <figure
+        class="frame frame--stadium relative z-10 mx-auto w-full"
+        style={`aspect-ratio: ${featuredProject.aspect}; max-width: 56rem;`}
+      >
+        <div
+          class="frame-media"
+          style={`background: ${featuredProject.gradient};`}
+          aria-hidden="true"
+        >
+        </div>
+        <div class="frame-sheen" aria-hidden="true"></div>
+        <figcaption
+          class="frame-label frame-label--lg"
+        >
+          <span class="frame-label-title">{featuredProject.title}</span>
+          <span class="frame-label-tag">{featuredProject.tag}</span>
+        </figcaption>
+      </figure>
+
+      <!-- Floating ovals around the centerpiece -->
+      <figure
+        class="frame frame--oval mosaic-float oval-tl"
+        data-parallax="-60"
+        style={`background: ${featuredOvals[0].gradient};`}
+        aria-label={featuredOvals[0].title}
+      >
+        <span class="frame-sheen" aria-hidden="true"></span>
+        <figcaption class="frame-label">
+          <span class="frame-label-title">{featuredOvals[0].title}</span>
+          <span class="frame-label-tag">{featuredOvals[0].tag}</span>
+        </figcaption>
+      </figure>
+
+      <figure
+        class="frame frame--oval mosaic-float oval-r"
+        data-parallax="80"
+        style={`background: ${featuredOvals[2].gradient};`}
+        aria-label={featuredOvals[2].title}
+      >
+        <span class="frame-sheen" aria-hidden="true"></span>
+        <figcaption class="frame-label">
+          <span class="frame-label-title">{featuredOvals[2].title}</span>
+          <span class="frame-label-tag">{featuredOvals[2].tag}</span>
+        </figcaption>
+      </figure>
+
+      <figure
+        class="frame frame--oval mosaic-float oval-bl"
+        data-parallax="60"
+        style={`background: ${featuredOvals[1].gradient};`}
+        aria-label={featuredOvals[1].title}
+      >
+        <span class="frame-sheen" aria-hidden="true"></span>
+        <figcaption class="frame-label">
+          <span class="frame-label-title">{featuredOvals[1].title}</span>
+          <span class="frame-label-tag">{featuredOvals[1].tag}</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ── Floating mosaic grid ── -->
+  <div class="section-container mt-24 sm:mt-32 md:mt-40">
+    <div class="mosaic-grid grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+      {
+        columns.map((col, ci) => (
+          <div
+            class="mosaic-col flex flex-col gap-4 sm:gap-5 md:gap-6"
+            data-parallax={columnParallax[ci]}
+            style={`margin-top: ${columnOffset[ci]};`}
+          >
+            {col.map((item) => (
+              <figure
+                class="frame frame--stadium mosaic-tile"
+                style={`aspect-ratio: 3/2; background: ${item.gradient};`}
+                aria-label={item.title}
+              >
+                <span class="frame-sheen" aria-hidden="true" />
+                <figcaption class="frame-label">
+                  <span class="frame-label-title">{item.title}</span>
+                  <span class="frame-label-tag">{item.tag}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Placeholder disclosure (D2) -->
+    <p
+      class="mt-12 text-center text-xs tracking-wider uppercase"
+      style="color: var(--t-muted); opacity: 0.7;"
+    >
+      Placeholder tiles — real project visuals coming in polish pass
+    </p>
+  </div>
+</section>
+
+<style>
+  /* ---- Frame base: pill / stadium mask over media ---- */
+  .frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--t-radius-pill);
+    box-shadow: var(--t-shadow-lg);
+    isolation: isolate;
+    background-color: var(--t-surface);
+  }
+
+  .frame-media {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Wide media frames read as a horizontal stadium; square-ish read as oval. */
+  .frame--stadium {
+    border-radius: clamp(1.5rem, 6vw, 3.5rem);
+  }
+
+  .frame--oval {
+    border-radius: var(--t-radius-pill);
+  }
+
+  /* Subtle top sheen for depth / premium glass feel */
+  .frame-sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.04) 24%,
+      transparent 45%
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ---- Label overlay ---- */
+  .frame-label {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: clamp(0.85rem, 2vw, 1.4rem);
+    width: 100%;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.15) 55%,
+      transparent 100%
+    );
+  }
+
+  .frame-label-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+    letter-spacing: -0.01em;
+    color: #fff;
+    line-height: 1.15;
+  }
+
+  .frame-label-tag {
+    font-size: clamp(0.68rem, 1vw, 0.8rem);
+    color: rgba(255, 255, 255, 0.72);
+    letter-spacing: 0.01em;
+  }
+
+  .frame-label--lg {
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+  }
+
+  .frame-label--lg .frame-label-title {
+    font-size: clamp(1.15rem, 2.6vw, 2rem);
+  }
+
+  .frame-label--lg .frame-label-tag {
+    font-size: clamp(0.78rem, 1.3vw, 1rem);
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  /* ---- Centerpiece floating ovals (absolute around the stadium) ---- */
+  .mosaic-centerpiece {
+    padding-block: clamp(2rem, 6vw, 5rem);
+  }
+
+  .frame--oval.mosaic-float {
+    position: absolute;
+    z-index: 20;
+    width: clamp(7rem, 15vw, 12rem);
+    aspect-ratio: 1 / 1;
+    box-shadow: var(--t-shadow-xl);
+  }
+
+  .oval-tl {
+    top: 0;
+    left: -1rem;
+  }
+
+  .oval-r {
+    top: 38%;
+    right: -1.5rem;
+  }
+
+  .oval-bl {
+    bottom: 0.5rem;
+    left: 8%;
+  }
+
+  /* Hide the tightest overlaps on very small screens to keep it clean */
+  @media (max-width: 480px) {
+    .oval-bl {
+      display: none;
+    }
+    .frame--oval.mosaic-float {
+      width: 6.5rem;
+    }
+  }
+
+  /* Gentle idle float (decorative) */
+  .mosaic-float {
+    animation: float 7s ease-in-out infinite;
+  }
+  .oval-r {
+    animation-delay: -2.3s;
+  }
+  .oval-bl {
+    animation-delay: -4.6s;
+  }
+
+  /* ---- Tile hover ---- */
+  .mosaic-tile,
+  .frame--stadium {
+    transition:
+      transform 0.5s var(--t-ease-out),
+      box-shadow 0.5s var(--t-ease-out);
+  }
+  .mosaic-tile:hover {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: var(--t-shadow-xl);
+  }
+
+  /* ---- Reduced motion ---- */
+  @media (prefers-reduced-motion: reduce) {
+    .mosaic-float {
+      animation: none !important;
+    }
+    .mosaic-col {
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initMosaic() {
+    const section = document.getElementById("work");
+    if (!section) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    // ── Intro entrance ──
+    const intro = section.querySelector(".mosaic-intro");
+    if (intro && !prefersReducedMotion) {
+      gsap.from(intro.children, {
+        opacity: 0,
+        y: 28,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.1,
+        scrollTrigger: { trigger: intro, start: "top 82%" },
+      });
+    }
+
+    // ── Centerpiece reveal ──
+    const centerpiece = section.querySelector(".mosaic-centerpiece");
+    if (centerpiece && !prefersReducedMotion) {
+      const stadium = centerpiece.querySelector(".frame--stadium");
+      const ovals = centerpiece.querySelectorAll(".mosaic-float");
+      if (stadium) {
+        gsap.from(stadium, {
+          opacity: 0,
+          scale: 0.92,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: centerpiece, start: "top 78%" },
+        });
+      }
+      if (ovals.length) {
+        gsap.from(ovals, {
+          opacity: 0,
+          scale: 0.6,
+          duration: 0.9,
+          ease: "back.out(1.6)",
+          stagger: 0.12,
+          scrollTrigger: { trigger: centerpiece, start: "top 70%" },
+        });
+      }
+    }
+
+    if (prefersReducedMotion) return;
+
+    // ── Parallax drift for centerpiece ovals ──
+    section.querySelectorAll<HTMLElement>(".mosaic-float").forEach((el) => {
+      const speed = parseFloat(el.dataset.parallax || "0");
+      if (!speed) return;
+      gsap.to(el, {
+        y: speed,
+        ease: "none",
+        scrollTrigger: {
+          trigger: centerpiece || section,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.8,
+        },
+      });
+    });
+
+    // ── Parallax drift for mosaic columns ──
+    const grid = section.querySelector(".mosaic-grid");
+    section.querySelectorAll<HTMLElement>(".mosaic-col").forEach((col) => {
+      const speed = parseFloat(col.dataset.parallax || "0");
+      if (!speed) return;
+      // Preserve the CSS stagger offset by animating a wrapper transform via y.
+      gsap.to(col, {
+        y: `+=${speed}`,
+        ease: "none",
+        scrollTrigger: {
+          trigger: grid || section,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.8,
+        },
+      });
+    });
+
+    // Tiles fade/rise in as the grid enters
+    if (grid) {
+      gsap.from(section.querySelectorAll(".mosaic-tile"), {
+        opacity: 0,
+        y: 40,
+        duration: 0.7,
+        ease: "power2.out",
+        stagger: { each: 0.06, from: "random" },
+        scrollTrigger: { trigger: grid, start: "top 85%" },
+      });
+    }
+
+    ScrollTrigger.refresh();
+  }
+
+  initMosaic();
+  document.addEventListener("astro:after-swap", initMosaic);
+</script>

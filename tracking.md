@@ -22,10 +22,10 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 
 | Field | Value |
 |-------|-------|
-| **Current phase** | 2 — Hero + morph |
-| **Status** | ✅ Completed — awaiting user approval to start Phase 3 |
-| **Last updated** | 2026-09-18 |
-| **Waiting on** | User approval to begin Phase 3 (Mosaic + centerpiece) |
+| **Current phase** | 3 — Mosaic + centerpiece |
+| **Status** | ✅ Completed — awaiting user approval to start Phase 4 |
+| **Last updated** | 2026-09-19 |
+| **Waiting on** | User approval to begin Phase 4 (Stats + sticky features) |
 
 ---
 
@@ -35,8 +35,8 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 |------:|------|--------|-------------------|-------|
 | 0 | Spec lock | ✅ Approved | Yes | Identity filled, scope confirmed |
 | 1 | Scaffold | ✅ Approved | Yes | Astro 5 + TS + Tailwind 4 + tokens + BaseLayout + header shell |
-| 2 | Hero + morph | ✅ Completed | Pending | Header states + hero section + stadium morph animation |
-| 3 | Mosaic + centerpiece | Not started | No | Floating mosaic + featured ovals |
+| 2 | Hero + morph | ✅ Approved | Yes | Header states + hero section + stadium morph animation |
+| 3 | Mosaic + centerpiece | ✅ Completed | Pending | Floating mosaic + featured ovals + parallax |
 | 4 | Stats + sticky features | Not started | No | Stats cards + sticky split panel |
 | 5 | Process systems | Not started | No | Timeline / wave / giant keywords |
 | 6 | Case study device | Not started | No | Sticky device + stacked cards |
@@ -71,33 +71,39 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 
 ## Active phase checklist
 
-### Phase 2 — Hero + morph
+### Phase 3 — Mosaic + centerpiece
 
-- [x] Inspected Numa live site HTML structure for hero (cover__mask, cover__camera, video bg)
-- [x] Reviewed reference images: pw_scroll_0 (hero), brave_FUd0g3ZDIw (mid-morph), brave_KA9zEFDG83 (post-morph)
-- [x] Created `src/scripts/smooth-scroll.ts` — Lenis + GSAP ScrollTrigger sync
-- [x] Updated `src/layouts/BaseLayout.astro` — uses shared smooth-scroll module
-- [x] Created `src/components/sections/Hero.astro` — full hero section:
-  - Dark atmospheric gradient background (placeholder for portrait)
-  - Subtle grid + vignette overlays for cinematic depth
-  - Large headline with accent-colored second line
-  - Subcopy, dual CTA buttons, identity bar
-  - Entrance animation: title line reveals + staggered fades
-  - GSAP ScrollTrigger pin+scrub morph: frame gains border-radius + margins → stadium shape
-  - Responsive morph values (mobile vs desktop insets)
-  - `prefers-reduced-motion` skip for all animations
-  - Theme background reveals around morphed frame
-- [x] Updated `src/components/Header.astro` — three visual states:
-  - `.header-transparent`: white text, subtle glass pills (over dark hero)
-  - `.scrolled`: frosted glass bar, themed text (post-morph)
-  - Default: themed text, no special background (non-hero pages)
-  - Hero CTA = white pill (matching Numa), transitions to accent green after scroll
-  - Fallback scroll listener for pages without hero
-- [x] Updated `src/pages/index.astro` — imports Hero, section placeholders for phases 3–8
-- [x] Build passes cleanly (4.3s, 0 errors)
-- [x] `tracking.md` updated; waiting for permission to start Phase 3
+- [x] Playwriter live-site pass on numa.uprock.pro (mosaic section):
+  - Inspected scroll choreography at multiple positions (centerpiece → grid)
+  - Confirmed frame geometry: pill `border-radius` (~1040px) + `overflow: hidden` over media; ~1.5:1 aspect; 4-column staggered grid with parallax drift
+  - Reviewed reference images `pw_scroll_1` (mosaic/centerpiece)
+  - Assets: Numa mosaic uses lifestyle photography → per rules, NOT copied; replaced with portfolio placeholders (D2)
+- [x] Created `src/data/projects.ts` — typed content model:
+  - `featuredProject` (wide stadium centerpiece), `featuredOvals` (surrounding ovals), `mosaicItems` (12 grid tiles)
+  - Placeholder gradients + labels (title + tag), clearly marked (D2)
+- [x] Created `src/components/sections/Mosaic.astro`:
+  - Section intro (eyebrow + heading + subcopy), `#work` anchor for nav
+  - Featured centerpiece: wide stadium frame + 3 floating ovals (absolute, idle float + scroll parallax)
+  - Floating mosaic: 4-column staggered grid of stadium tiles, per-column parallax drift (alternating speeds)
+  - Reusable `.frame` pattern: pill/stadium mask, sheen overlay, gradient label
+  - Entrance reveals (intro, centerpiece scale-in, ovals back.out, tiles random-stagger)
+  - Placeholder disclosure line (D2)
+  - `prefers-reduced-motion`: no parallax/idle float; static staggered grid
+- [x] Updated `src/pages/index.astro` — imports + renders `<Mosaic />`
+- [x] Build passes cleanly (~4s, 0 errors)
+- [x] Verified in browser via Playwriter (localhost preview): centerpiece + floating ovals + parallax mosaic grid render correctly (dark mode); header transitions to scrolled state
+- [x] `tracking.md` updated; waiting for permission to start Phase 4
 
 ---
+
+## Files touched (Phase 3)
+
+| File | Action |
+|------|--------|
+| `src/data/projects.ts` | Created — typed content model (featured + ovals + 12 mosaic tiles), placeholder gradients |
+| `src/components/sections/Mosaic.astro` | Created — floating mosaic + featured centerpiece + parallax |
+| `src/pages/index.astro` | Updated — imports + renders `<Mosaic />` |
+| `tracking.md` | Updated — Phase 2 approved, Phase 3 tracked |
 
 ## Files touched (Phase 2)
 
@@ -126,6 +132,10 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 | D8 | Hero CTA over dark bg = white pill (not accent green) | Matches Numa's white pill CTA over hero; transitions to accent after scroll |
 | D9 | Lenis + GSAP sync via shared module `smooth-scroll.ts` | Single init, prevents double rAF loops, properly connects Lenis scroll to ScrollTrigger |
 | D10 | Morph uses margin animation (not inset) on hero-frame | More reliable with GSAP; margin on a relatively-positioned block-level element |
+| D11 | Mosaic tiles carry small title+tag labels (Numa has none) | Portfolio benefit: visitors need to know what each piece is; kept subtle over gradient scrim |
+| D12 | Numa mosaic lifestyle photos NOT copied | Per BUILD_PROMPT asset rules — replace people photography; used placeholder gradients (D2) instead |
+| D13 | Column parallax via `margin-top` for stagger + GSAP `y` for drift | Keeps GSAP sole owner of `transform`; avoids inline-transform conflict |
+| D14 | Tiles use large rounded-rect radius (not full pill) | Full pill/ellipse would crop bottom labels; large radius preserves stadium feel while keeping labels legible |
 
 ---
 
@@ -150,7 +160,8 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 |------|------:|------------|------------|---------------------------------------------|-----------------|
 | — | — | — | — | — | — |
 
-> Note: Phase 2 hero uses a CSS gradient placeholder, not Numa assets. Numa's hero uses a video (`/f/8481e588bacd48325f27d47baf528b0a_1920.mp4`). Asset copying will begin in Phase 3+ for mosaic images and later for 3D device model.
+> Note: Phase 2 hero uses a CSS gradient placeholder, not Numa assets. Numa's hero uses a video (`/f/8481e588bacd48325f27d47baf528b0a_1920.mp4`).
+> Note: Phase 3 mosaic tiles/centerpiece use CSS gradient placeholders + labels (D2/D12). Numa's mosaic is lifestyle photography, which per BUILD_PROMPT asset rules must NOT be copied — so nothing copied this phase. Real project visuals to be swapped before Phase 9. 3D/device motion asset copying still planned for Phase 6/8.
 
 ---
 
@@ -164,6 +175,7 @@ When checking the live site, verify design, animations, **scrolling behavior**, 
 | 2026-09-17 | 1 | Completed Phase 1 Scaffold: Astro 5 + TS + Tailwind 4, design tokens, animations.css, global styles, BaseLayout with Lenis + theme flash prevention, floating glass Header, typed data files, Space Grotesk + DM Sans fonts, dark/light mode, favicon. Build + dev server verified. |
 | 2026-09-17 | 2 | Started Phase 2: inspected Numa live site HTML, reviewed reference images for hero morph behavior. Created Hero.astro with gradient bg + entrance animation + GSAP pin/scrub morph. Created smooth-scroll.ts for Lenis+GSAP sync. Rewrote Header with 3 visual states. |
 | 2026-09-18 | 2 | Completed Phase 2: fixed hero-section bg for morph reveal, verified build (clean, 4.3s). All deliverables done. |
+| 2026-09-19 | 3 | Started + completed Phase 3 Mosaic + centerpiece: Playwriter pass on Numa mosaic (geometry + parallax choreography). Created typed `projects.ts` + `Mosaic.astro` (featured wide-stadium centerpiece + floating ovals + 4-column parallax mosaic grid, reduced-motion aware). Wired into index. Build clean; verified centerpiece + grid in browser. Numa lifestyle photos not copied (placeholders per rules). |
 
 ---
 
