@@ -1,0 +1,442 @@
+---
+/**
+ * Features.astro — Phase 4: Sticky split feature panel
+ *
+ * Numa reference pattern (pw_scroll_3 + Playwriter pin inspection):
+ * - Left column: headline + divider, then a vertical 3-item active list
+ *   (dot on the active item) with the active item's description below.
+ * - Right column: large rounded media that swaps as scroll advances.
+ * - Section is PINNED and scrubs through the 3 states.
+ *
+ * Portfolio adaptation: 3 signature strengths (frontend / backend / delivery).
+ *
+ * Motion:
+ * - Desktop (lg+) + motion allowed: GSAP pin + scrub advances the active
+ *   item while media crossfades. List items are also clickable (accessible).
+ * - Reduced motion (desktop): no pin; clicking the list switches state.
+ * - Mobile (< lg): static stacked layout (media + text per feature).
+ */
+
+import { features, featuresHeading } from "@/data/content";
+---
+
+<section
+  id="about"
+  class="features-section relative w-full"
+  style="background: var(--t-bg)"
+  aria-label="How I build"
+>
+  <!-- ── Desktop / tablet interactive split (lg+) ── -->
+  <div class="features-desktop hidden lg:block">
+    <div class="features-pin">
+      <div class="section-container w-full">
+        <div class="grid grid-cols-2 gap-10 xl:gap-16 items-center">
+          <!-- Left column -->
+          <div class="features-left">
+            <span
+              class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium tracking-widest uppercase"
+              style="color: var(--t-accent)"
+            >
+              <span class="inline-block w-6 h-px" style="background: var(--t-accent)"></span>
+              {featuresHeading.eyebrow}
+            </span>
+            <h2
+              class="mt-5 font-display font-bold leading-[1.05] tracking-tight text-[clamp(2rem,3.6vw,3.5rem)]"
+              style="color: var(--t-text)"
+            >
+              {featuresHeading.title}
+            </h2>
+
+            <hr class="features-divider" />
+
+            <ul class="feature-list" role="tablist" aria-label="Signature strengths">
+              {
+                features.map((f, i) => (
+                  <li role="presentation">
+                    <button
+                      type="button"
+                      class:list={["feature-item", { active: i === 0 }]}
+                      data-index={i}
+                      role="tab"
+                      aria-selected={i === 0 ? "true" : "false"}
+                      aria-controls={`feature-panel-${f.id}`}
+                    >
+                      <span class="feature-dot" aria-hidden="true" />
+                      <span class="feature-label">{f.label}</span>
+                    </button>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <div class="feature-desc-wrap">
+              {
+                features.map((f, i) => (
+                  <div
+                    class:list={["feature-desc", { active: i === 0 }]}
+                    data-index={i}
+                    id={`feature-panel-${f.id}`}
+                    role="tabpanel"
+                  >
+                    <h3 class="feature-desc-title">{f.title}</h3>
+                    <p class="feature-desc-body">{f.desc}</p>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+
+          <!-- Right media -->
+          <div class="features-media">
+            {
+              features.map((f, i) => (
+                <figure
+                  class:list={["feature-media-frame", { active: i === 0 }]}
+                  data-index={i}
+                  style={`background: ${f.gradient};`}
+                  aria-hidden={i === 0 ? "false" : "true"}
+                >
+                  <img
+                    class="feature-img"
+                    src={f.image}
+                    alt={f.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span class="frame-sheen" aria-hidden="true" />
+                  <figcaption class="feature-media-label">{f.label}</figcaption>
+                </figure>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Mobile stacked layout (< lg) ── -->
+  <div class="features-mobile lg:hidden section-container py-20 sm:py-24">
+    <span
+      class="inline-flex items-center gap-2 text-xs font-medium tracking-widest uppercase"
+      style="color: var(--t-accent)"
+    >
+      <span class="inline-block w-6 h-px" style="background: var(--t-accent)"></span>
+      {featuresHeading.eyebrow}
+    </span>
+    <h2
+      class="mt-4 mb-10 font-display font-bold leading-[1.08] tracking-tight text-[clamp(1.9rem,7vw,2.75rem)]"
+      style="color: var(--t-text)"
+    >
+      {featuresHeading.title}
+    </h2>
+
+    <div class="space-y-12">
+      {
+        features.map((f) => (
+          <article class="feature-mobile-card">
+            <figure
+              class="feature-mobile-media"
+              style={`background: ${f.gradient};`}
+              aria-label={f.label}
+            >
+              <img
+                class="feature-img"
+                src={f.image}
+                alt={f.alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="frame-sheen" aria-hidden="true" />
+              <figcaption class="feature-media-label">{f.label}</figcaption>
+            </figure>
+            <h3 class="mt-6 feature-desc-title" style="color: var(--t-text)">
+              {f.title}
+            </h3>
+            <p class="mt-2 feature-desc-body" style="color: var(--t-muted)">
+              {f.desc}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ---- Pinned wrapper ---- */
+  .features-pin {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-block: clamp(4rem, 8vh, 7rem);
+  }
+
+  /* ---- Left column ---- */
+  .features-divider {
+    border: 0;
+    border-top: 1px solid var(--t-border);
+    margin: clamp(1.5rem, 3vw, 2.5rem) 0;
+  }
+
+  .feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: clamp(1.75rem, 3vw, 2.75rem);
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 0.4rem 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    color: var(--t-muted);
+    transition:
+      color 0.35s var(--t-ease-out),
+      opacity 0.35s var(--t-ease-out);
+  }
+
+  .feature-dot {
+    flex-shrink: 0;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 9999px;
+    background: var(--t-accent);
+    transform: scale(0.35);
+    opacity: 0;
+    transition:
+      transform 0.35s var(--t-ease-spring),
+      opacity 0.35s var(--t-ease-out);
+  }
+
+  .feature-item.active {
+    color: var(--t-text);
+  }
+  .feature-item.active .feature-dot {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 5px rgba(14, 159, 110, 0.15);
+  }
+  .feature-item:hover:not(.active) {
+    color: var(--t-text);
+    opacity: 0.85;
+  }
+  .feature-item:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 3px;
+    border-radius: var(--t-radius-sm);
+  }
+
+  /* ---- Description (stacked, crossfade) ---- */
+  .feature-desc-wrap {
+    position: relative;
+    min-height: 7.5rem;
+  }
+  .feature-desc {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(0.75rem);
+    pointer-events: none;
+    transition:
+      opacity 0.45s var(--t-ease-out),
+      transform 0.45s var(--t-ease-out);
+  }
+  .feature-desc.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .feature-desc-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    letter-spacing: -0.01em;
+    color: var(--t-text);
+    margin-bottom: 0.6rem;
+  }
+  .feature-desc-body {
+    font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+    line-height: 1.6;
+    color: var(--t-muted);
+    max-width: 42ch;
+  }
+
+  /* ---- Right media (crossfading stack) ---- */
+  .features-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: clamp(1.5rem, 3vw, 2.5rem);
+    overflow: hidden;
+    box-shadow: var(--t-shadow-xl);
+    isolation: isolate;
+  }
+  .feature-media-frame {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.04);
+    transition:
+      opacity 0.6s var(--t-ease-out),
+      transform 0.8s var(--t-ease-out);
+  }
+  .feature-media-frame.active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .feature-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  .frame-sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.04) 26%,
+      transparent 48%
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .feature-media-label {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 3;
+    width: 100%;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1rem, 1.6vw, 1.35rem);
+    color: #fff;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0.1) 55%,
+      transparent 100%
+    );
+  }
+
+  /* ---- Mobile stacked media ---- */
+  .feature-mobile-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    border-radius: clamp(1.25rem, 5vw, 2rem);
+    overflow: hidden;
+    box-shadow: var(--t-shadow-lg);
+    isolation: isolate;
+  }
+
+  /* ---- Reduced motion ---- */
+  @media (prefers-reduced-motion: reduce) {
+    .feature-desc,
+    .feature-media-frame,
+    .feature-dot,
+    .feature-item {
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initFeatures() {
+    const section = document.querySelector<HTMLElement>(".features-section");
+    if (!section) return;
+
+    const desktop = section.querySelector<HTMLElement>(".features-desktop");
+    if (!desktop) return;
+
+    const items = Array.from(
+      desktop.querySelectorAll<HTMLElement>(".feature-item")
+    );
+    const descs = Array.from(
+      desktop.querySelectorAll<HTMLElement>(".feature-desc")
+    );
+    const frames = Array.from(
+      desktop.querySelectorAll<HTMLElement>(".feature-media-frame")
+    );
+    const total = items.length;
+    if (!total) return;
+
+    let current = 0;
+
+    function setActive(index: number) {
+      const i = Math.max(0, Math.min(total - 1, index));
+      if (i === current) return;
+      current = i;
+      items.forEach((el, n) => {
+        const on = n === i;
+        el.classList.toggle("active", on);
+        el.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      descs.forEach((el, n) => el.classList.toggle("active", n === i));
+      frames.forEach((el, n) => {
+        const on = n === i;
+        el.classList.toggle("active", on);
+        el.setAttribute("aria-hidden", on ? "false" : "true");
+      });
+    }
+
+    // Click / keyboard selection (accessible + reduced-motion friendly)
+    items.forEach((item) => {
+      item.addEventListener("click", () => {
+        const idx = parseInt(item.dataset.index || "0", 10);
+        setActive(idx);
+      });
+    });
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+
+    // Only pin+scrub on desktop with motion allowed.
+    if (prefersReducedMotion || !isDesktop) return;
+
+    const pin = desktop.querySelector<HTMLElement>(".features-pin");
+    if (!pin) return;
+
+    ScrollTrigger.create({
+      trigger: pin,
+      start: "top top",
+      end: "+=" + total * 100 + "%",
+      pin: true,
+      scrub: 0.5,
+      anticipatePin: 1,
+      onUpdate: (self) => {
+        // Map scroll progress → active index across the states.
+        const idx = Math.floor(self.progress * total * 0.999);
+        setActive(idx);
+      },
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  initFeatures();
+  document.addEventListener("astro:after-swap", initFeatures);
+</script>

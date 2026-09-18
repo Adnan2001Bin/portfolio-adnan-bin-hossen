@@ -27,7 +27,17 @@ import { siteConfig } from "@/data/navigation";
     class="relative w-full h-screen overflow-hidden"
     style="border-radius: 0;"
   >
-    <!-- Gradient background (placeholder — replace with portrait/creative still later) -->
+    <!-- Background image (dark code / tech atmosphere) -->
+    <img
+      class="hero-bg-img"
+      src="/images/hero-bg.jpg"
+      alt=""
+      aria-hidden="true"
+      fetchpriority="high"
+      decoding="async"
+    />
+
+    <!-- Gradient scrim over the image for cinematic depth + text legibility -->
     <div class="absolute inset-0 hero-gradient" aria-hidden="true"></div>
 
     <!-- Subtle grid pattern overlay -->
@@ -35,16 +45,6 @@ import { siteConfig } from "@/data/navigation";
 
     <!-- Vignette overlay for depth -->
     <div class="absolute inset-0 hero-vignette" aria-hidden="true"></div>
-
-    <!-- Placeholder badge -->
-    <div class="absolute top-24 right-6 sm:right-10 z-20">
-      <span
-        class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-medium tracking-wider uppercase text-white/50 backdrop-blur-sm"
-      >
-        <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-soft animate-pulse"></span>
-        Placeholder — add portrait
-      </span>
-    </div>
 
     <!-- Hero content — bottom-left aligned (Numa pattern) -->
     <div
@@ -111,13 +111,28 @@ import { siteConfig } from "@/data/navigation";
 </section>
 
 <style>
-  /* ---- Hero gradient (cinematic dark atmosphere with emerald accents) ---- */
+  /* ---- Hero background image ---- */
+  .hero-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  /* ---- Hero gradient scrim (darkens image + emerald cinematic tint) ---- */
   .hero-gradient {
     background:
-      radial-gradient(ellipse at 20% 100%, rgba(14, 159, 110, 0.18) 0%, transparent 45%),
-      radial-gradient(ellipse at 85% 15%, rgba(52, 211, 153, 0.07) 0%, transparent 35%),
-      radial-gradient(ellipse at 50% 50%, #0c1f3a 0%, transparent 65%),
-      linear-gradient(170deg, #050d1a 0%, #0a1628 35%, #071321 70%, #030a14 100%);
+      radial-gradient(ellipse at 20% 100%, rgba(14, 159, 110, 0.30) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 15%, rgba(52, 211, 153, 0.10) 0%, transparent 35%),
+      linear-gradient(
+        170deg,
+        rgba(5, 13, 26, 0.86) 0%,
+        rgba(10, 22, 40, 0.72) 35%,
+        rgba(7, 19, 33, 0.8) 70%,
+        rgba(3, 10, 20, 0.94) 100%
+      );
   }
 
   /* ---- Subtle grid overlay (tech aesthetic) ---- */

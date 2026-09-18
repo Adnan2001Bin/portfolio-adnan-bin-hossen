@@ -1,0 +1,178 @@
+---
+/**
+ * Stats.astro — Phase 4: Stats / proof strip
+ *
+ * Numa reference pattern (pw_scroll_2):
+ * - 3 tall gradient cards, big number + small superscript unit up top,
+ *   caption + description on the lighter bottom, small dot top-left.
+ * - Atmospheric gradient (Numa blue→white); here emerald→surface.
+ *
+ * Motion: staggered entrance on scroll. Reduced-motion safe.
+ */
+
+import { stats } from "@/data/content";
+---
+
+<section
+  class="relative w-full py-20 sm:py-24 md:py-28"
+  style="background: var(--t-bg)"
+  aria-label="By the numbers"
+>
+  <div class="section-container">
+    <div class="stats-grid grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+      {
+        stats.map((stat) => (
+          <article class="stat-card">
+            <span class="stat-dot" aria-hidden="true" />
+            <div class="stat-number">
+              <span class="stat-value">{stat.value}</span>
+              <sup class="stat-unit">{stat.unit}</sup>
+            </div>
+            <div class="stat-foot">
+              <h3 class="stat-title">{stat.title}</h3>
+              <p class="stat-desc">{stat.desc}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .stat-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: clamp(20rem, 38vw, 30rem);
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    border-radius: clamp(1.5rem, 3vw, 2.5rem);
+    overflow: hidden;
+    isolation: isolate;
+    color: #fff;
+    box-shadow: var(--t-shadow-lg);
+    /* Atmospheric gradient: emerald at top → soft light glow at bottom */
+    background:
+      radial-gradient(
+        120% 60% at 50% 118%,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0) 60%
+      ),
+      linear-gradient(
+        180deg,
+        var(--t-accent-glow) 0%,
+        var(--t-accent) 38%,
+        var(--t-accent-soft) 100%
+      );
+  }
+
+  /* Dark theme: fade to dark surface instead of white */
+  :global(.dark) .stat-card {
+    background:
+      radial-gradient(
+        120% 60% at 50% 120%,
+        rgba(5, 10, 20, 0.9) 0%,
+        rgba(5, 10, 20, 0) 62%
+      ),
+      linear-gradient(
+        180deg,
+        var(--t-accent-glow) 0%,
+        var(--t-accent) 42%,
+        #0b6b4b 100%
+      );
+  }
+
+  .stat-dot {
+    position: absolute;
+    top: clamp(1.25rem, 2.5vw, 2rem);
+    left: clamp(1.25rem, 2.5vw, 2rem);
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
+  }
+
+  .stat-number {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    line-height: 0.9;
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3.5rem, 9vw, 6.5rem);
+    letter-spacing: -0.03em;
+    color: #fff;
+  }
+
+  .stat-unit {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    color: rgba(255, 255, 255, 0.85);
+    top: 0.6em;
+  }
+
+  .stat-foot {
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    letter-spacing: -0.01em;
+    /* On the light glow at the bottom, use the theme text color for contrast */
+    color: var(--t-text);
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-desc {
+    font-size: clamp(0.85rem, 1.2vw, 0.98rem);
+    line-height: 1.5;
+    color: var(--t-muted);
+    max-width: 26ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stat-card {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initStats() {
+    const grid = document.querySelector(".stats-grid");
+    if (!grid) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefersReducedMotion) return;
+
+    gsap.from(grid.querySelectorAll(".stat-card"), {
+      opacity: 0,
+      y: 48,
+      duration: 0.8,
+      ease: "power3.out",
+      stagger: 0.12,
+      scrollTrigger: { trigger: grid, start: "top 82%" },
+    });
+  }
+
+  initStats();
+  document.addEventListener("astro:after-swap", initStats);
+</script>
